@@ -117,6 +117,55 @@ class SMSRepository:
                 )
 
             conn.commit()
+    def get_retry(self, inbox_id: int) -> RetryQueue | None:
+        """
+        Fetch the retry information for a specific SMS.
+
+        Returns:
+            RetryQueue object if an entry exists.
+            None otherwise.
+        """
+
+        query = """
+            SELECT
+
+                id,
+                inbox_id,
+                retry_count,
+                status,
+                next_retry_time,
+                last_error,
+                created_at
+
+            FROM retry_queue
+
+            WHERE inbox_id = %s;
+        """
+
+        with get_connection() as conn:
+            with conn.cursor() as cursor:
+
+                cursor.execute(
+                    query,
+                    (inbox_id,),
+                )
+
+                row = cursor.fetchone()
+
+                if row is None:
+                    return None
+
+                return RetryQueue(
+                    id=row[0],
+                    inbox_id=row[1],
+                    retry_count=row[2],
+                    status=row[3],
+                    next_retry_time=row[4],
+                    last_error=row[5],
+                    created_at=row[6],
+                )
+
+    
 
     # ======================================================
     # Retry Queue
@@ -165,6 +214,13 @@ class SMSRepository:
 
         with get_connection() as conn:
             with conn.cursor() as cursor:
+
+                print("=" * 50)
+                print("Inbox ID       :", inbox_id)
+                print("Retry Count    :", retry_count)
+                print("Next Retry Time:", next_retry_time)
+                print("Last Error     :", last_error)
+                print("=" * 50)
 
                 cursor.execute(
                     query,
