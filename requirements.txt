@@ -1,0 +1,9 @@
+requests
+
+psycopg[binary]
+psycopg-pool
+
+python-dotenv
+
+pydantic
+pydantic-settings
