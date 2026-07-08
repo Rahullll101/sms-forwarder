@@ -10,5 +10,8 @@ venv
 # Environment
 .env
 
+#command
+command.txt
+
 # Logs
 logs/
