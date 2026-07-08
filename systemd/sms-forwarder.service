@@ -1,0 +1,26 @@
+#after harware setup uncomment the below lines
+[Unit]
+Description=SMS Forwarder Retry Worker
+After=network.target postgresql.service
+
+[Service]
+Type=simple
+
+User=rahul
+Group=rahul
+
+WorkingDirectory=/home/rahul/polynomialai/sms-forwarder
+
+ExecStart=/home/rahul/polynomialai/sms-forwarder/venv/bin/python \
+    -m scripts.retry_worker
+
+Restart=always
+RestartSec=5
+
+Environment=PYTHONUNBUFFERED=1
+
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

@@ -11,7 +11,11 @@ import shutil
 import requests
 
 from app.config import settings
-from app.database import get_connection
+from app.database import (
+    get_connection,
+    initialize_database,
+    close_database,
+)
 
 
 def check_database() -> bool:
@@ -31,6 +35,10 @@ def check_database() -> bool:
         return True
 
     except Exception:
+        import traceback
+
+        print("\nDatabase Health Check Failed")
+        traceback.print_exc()
 
         return False
 
@@ -85,7 +93,6 @@ def check_disk_space() -> bool:
 # def check_gammu_service() -> bool:
 #     """
 #     Check whether Gammu SMSD service is running.
-#
 #     Example:
 #
 #         systemctl is-active gammu-smsd
@@ -97,7 +104,6 @@ def check_disk_space() -> bool:
 # def check_modem() -> bool:
 #     """
 #     Verify SIM7600 modem is detected.
-#
 #     Example:
 #
 #         lsusb
@@ -114,7 +120,6 @@ def check_disk_space() -> bool:
 #     """
 #     Verify SIM is registered
 #     on the mobile network.
-#
 #     Example:
 #
 #         AT+CREG?
@@ -126,7 +131,6 @@ def check_disk_space() -> bool:
 # def check_signal_strength() -> bool:
 #     """
 #     Verify modem signal quality.
-#
 #     Example:
 #
 #         AT+CSQ
@@ -136,52 +140,63 @@ def check_disk_space() -> bool:
 
 
 def main() -> None:
+    """
+    Execute all health checks.
+    """
 
-    checks = {
+    initialize_database()
 
-        "Database": check_database(),
+    try:
 
-        "Endpoint": check_endpoint(),
+        checks = {
 
-        "Logs Directory": check_logs(),
+            "Database": check_database(),
 
-        "Disk Space": check_disk_space(),
+            "Endpoint": check_endpoint(),
 
-        # ==================================================
-        # Enable after hardware deployment
-        # ==================================================
+            "Logs Directory": check_logs(),
 
-        # "Gammu SMSD": check_gammu_service(),
-        #
-        # "SIM7600 Modem": check_modem(),
-        #
-        # "SIM Registration": check_sim_registration(),
-        #
-        # "Signal Strength": check_signal_strength(),
+            "Disk Space": check_disk_space(),
 
-    }
+            # ==================================================
+            # Enable after hardware deployment
+            # ==================================================
 
-    print("\n========== Health Check ==========\n")
+            # "Gammu SMSD": check_gammu_service(),
+            #
+            # "SIM7600 Modem": check_modem(),
+            #
+            # "SIM Registration": check_sim_registration(),
+            #
+            # "Signal Strength": check_signal_strength(),
 
-    overall = True
+        }
 
-    for component, status in checks.items():
+        print("\n========== Health Check ==========\n")
 
-        symbol = "✓" if status else "✗"
+        overall = True
 
-        print(f"{symbol} {component}")
+        for component, status in checks.items():
 
-        overall &= status
+            symbol = "✓" if status else "✗"
 
-    print("\n==================================")
+            print(f"{symbol} {component}")
 
-    if overall:
+            overall &= status
 
-        print("Overall Status : HEALTHY")
+        print("\n==================================")
 
-    else:
+        if overall:
 
-        print("Overall Status : UNHEALTHY")
+            print("Overall Status : HEALTHY")
+
+        else:
+
+            print("Overall Status : UNHEALTHY")
+
+    finally:
+
+        close_database()
 
 
 if __name__ == "__main__":

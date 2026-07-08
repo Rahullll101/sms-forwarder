@@ -1,0 +1,18 @@
+#after hardware setup  uncomment the below lines
+
+# [Unit]
+# Description=SMS Forwarder Retry Worker
+# After=network.target
+# Wants=network.target
+# ConditionPathExists=/etc/gammu-smsdrc
+
+# [Service]
+# Type=simple
+# User=root
+# WorkingDirectory=/root/sms-forwarder
+# ExecStart=/usr/bin/python3 /root/sms-forwarder/scripts/retry_worker.py
+# Restart=on-failure
+# RestartSec=10
+
+# [Install]
+# WantedBy=multi-user.target
