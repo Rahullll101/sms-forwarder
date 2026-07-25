@@ -15,3 +15,7 @@ command.txt
 
 # Logs
 logs/
+cmd.txt
+gammu-smsd
+app/__init__.py
+scripts/__init__.py
