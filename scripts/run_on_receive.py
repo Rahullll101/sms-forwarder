@@ -46,9 +46,7 @@ def main() -> None:
             "RunOnReceive triggered for SMS ID %s",
             inbox_id,
         )
-
         processor = SMSProcessor()
-
         processor.process_sms(inbox_id)
 
         application_logger.info(
