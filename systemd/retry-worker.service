@@ -1,18 +1,22 @@
 #after hardware setup  uncomment the below lines
 
-# [Unit]
-# Description=SMS Forwarder Retry Worker
-# After=network.target
-# Wants=network.target
-# ConditionPathExists=/etc/gammu-smsdrc
+[Unit]
+Description=SMS Forwarder Retry Worker
+After=network.target postgresql.service gammu-smsd.service
+Wants=network.target
+Requires=gammu-smsd.service
 
-# [Service]
-# Type=simple
-# User=root
-# WorkingDirectory=/root/sms-forwarder
-# ExecStart=/usr/bin/python3 /root/sms-forwarder/scripts/retry_worker.py
-# Restart=on-failure
-# RestartSec=10
+[Service]
+Type=simple
+User=kali
+Group=kali
+WorkingDirectory=/home/kali/Projects/sms-forwarder
+Environment="PYTHONUNBUFFERED=1"
+ExecStart=/home/kali/Projects/sms-forwarder/.venv/bin/python -m scripts.retry_worker
+Restart=always
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
 
-# [Install]
-# WantedBy=multi-user.target
+[Install]
+WantedBy=multi-user.target
