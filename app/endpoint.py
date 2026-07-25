@@ -27,8 +27,9 @@ class EndpointClient:
 
         payload = {
             "inbox_id": sms.inbox_id,
-            "sender": sms.sender,
-            "message": sms.message,
+            "From": sms.sender,
+            "To": settings.sim_number,
+            "Body": sms.message,
             "received_at": sms.received_at.isoformat(),
         }
 
